@@ -9,21 +9,16 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.interview.weatherapp.data.network.model.WeatherResponse;
+import com.interview.weatherapp.data.dto.WeatherDTO;
 import com.interview.weatherapp.ui.adapter.WeatherAdapter;
 import com.interview.weatherapp.ui.viewModel.WeatherViewModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         setupRecyclerView();
 
-        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
+        ViewModelProvider.AndroidViewModelFactory factory =
+                ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication());
+        weatherViewModel = new ViewModelProvider(this, factory).get(WeatherViewModel.class);
 
         observeViewModel();
 
@@ -81,12 +78,10 @@ public class MainActivity extends AppCompatActivity {
                     errorWindow.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
 
-                    if(resource.data != null) {
+                    if (resource.data != null) {
                         weatherViewModel.addToHistory(resource.data);
-//                        weatherAdapter.setWeatherData(weatherViewModel.getSearchHistory());
-//                        recyclerView.scrollToPosition(0);
-                        List<WeatherResponse> weatherResponses = new ArrayList<>(weatherViewModel.getSearchHistory());
-                        weatherAdapter.submitList(weatherResponses);
+                        List<WeatherDTO> weatherList = new ArrayList<>(weatherViewModel.getSearchHistory());
+                        weatherAdapter.submitList(weatherList);
                     }
                     break;
 
@@ -104,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideKeyBoard() {
         View view = this.getCurrentFocus();
-        if(view != null) {
+        if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }

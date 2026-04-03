@@ -1,7 +1,5 @@
 package com.interview.weatherapp.ui.adapter;
 
-import static com.interview.weatherapp.utils.Constants.IMAGE_URL;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.interview.weatherapp.R;
-import com.interview.weatherapp.data.network.model.WeatherResponse;
-import com.interview.weatherapp.ui.viewModel.WeatherViewModel;
+import com.interview.weatherapp.data.dto.WeatherDTO;
 import com.interview.weatherapp.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class WeatherAdapter extends ListAdapter<WeatherResponse, WeatherAdapter.WeatherViewHolder> {
+public class WeatherAdapter extends ListAdapter<WeatherDTO, WeatherAdapter.WeatherViewHolder> {
 
     public WeatherAdapter() {
         super(new WeatherDiffCallback());
@@ -39,42 +33,37 @@ public class WeatherAdapter extends ListAdapter<WeatherResponse, WeatherAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull WeatherViewHolder holder, int position) {
-        WeatherResponse weatherResponse = getItem(position);
-
-        holder.cityName.setText(weatherResponse.getCityName());
-
-        if(weatherResponse.getMain() != null) {
-            String tempString = weatherResponse.getMain().getTemperature() + "\u00B0 C";
-            holder.temperature.setText(tempString);
-        }
-
-        if(weatherResponse.getWeatherList() != null && !weatherResponse.getWeatherList().isEmpty()) {
-            String desc = weatherResponse.getWeatherList().get(0).getDescription();
-            holder.description.setText(desc);
-
-            String iconCode = weatherResponse.getWeatherList().get(0).getIconCode();
-            String imageUrl = Constants.IMAGE_URL + iconCode + "@2x.png";
-            Glide.with(holder.itemView.getContext())
-                    .load(imageUrl)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
-                    .into(holder.ivWeatherIcon);
-
-        }
+        WeatherDTO weatherDTO = getItem(position);
+        holder.cityName.setText(weatherDTO.getCityName());
+        String tempString = weatherDTO.getTemperature() + "\u00B0 C";
+        holder.temperature.setText(tempString);
+        String desc = weatherDTO.getDescription();
+        holder.description.setText(desc);
+        long timeInMillis = weatherDTO.getLastUpdatedTime();
+        CharSequence timeAgo = android.text.format.DateUtils.getRelativeTimeSpanString(
+                timeInMillis,
+                System.currentTimeMillis(),
+                android.text.format.DateUtils.MINUTE_IN_MILLIS
+        );
+        holder.lastUpdatedTime.setText("Updated: " + timeAgo.toString());
+        String iconCode = weatherDTO.getIconCode();
+        String imageUrl = Constants.IMAGE_URL + iconCode + "@2x.png";
+        Glide.with(holder.itemView.getContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
+                .into(holder.ivWeatherIcon);
     }
 
-    static class WeatherDiffCallback extends DiffUtil.ItemCallback<WeatherResponse> {
+    static class WeatherDiffCallback extends DiffUtil.ItemCallback<WeatherDTO> {
         @Override
-        public boolean areItemsTheSame(@NonNull WeatherResponse oldItem, @NonNull WeatherResponse newItem) {
+        public boolean areItemsTheSame(@NonNull WeatherDTO oldItem, @NonNull WeatherDTO newItem) {
             return oldItem.getCityName().equals(newItem.getCityName());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull WeatherResponse oldItem, @NonNull WeatherResponse newItem) {
-            if(oldItem.getMain() == null || newItem.getMain() == null) {
-                return false;
-            }
-            return oldItem.getMain().getTemperature() == newItem.getMain().getTemperature();
+        public boolean areContentsTheSame(@NonNull WeatherDTO oldItem, @NonNull WeatherDTO newItem) {
+            return oldItem.getTemperature() == newItem.getTemperature();
         }
 
     }
@@ -84,7 +73,6 @@ public class WeatherAdapter extends ListAdapter<WeatherResponse, WeatherAdapter.
         TextView temperature;
         TextView description;
         ImageView ivWeatherIcon;
-
         TextView lastUpdatedTime;
 
         public WeatherViewHolder(@NonNull View itemView) {

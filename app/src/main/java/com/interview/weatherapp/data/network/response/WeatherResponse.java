@@ -1,4 +1,4 @@
-package com.interview.weatherapp.data.network.model;
+package com.interview.weatherapp.data.network.response;
 
 import com.google.gson.annotations.SerializedName;
 

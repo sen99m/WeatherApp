@@ -1,25 +1,20 @@
-package com.interview.weatherapp.data.database.model;
+package com.interview.weatherapp.data.dto;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "weather")
-public class WeatherEntity {
-    @PrimaryKey
-    @NonNull
+public class WeatherDTO {
     private String cityName;
     private double temperature;
     private String description;
     private String iconCode;
     private long lastUpdatedTime;
 
-    @NonNull
+    public WeatherDTO() {
+    }
+
     public String getCityName() {
         return cityName;
     }
 
-    public void setCityName(@NonNull String cityName) {
+    public void setCityName(String cityName) {
         this.cityName = cityName;
     }
 
@@ -47,11 +42,11 @@ public class WeatherEntity {
         this.iconCode = iconCode;
     }
 
-    public long getLastUpdated() {
+    public long getLastUpdatedTime() {
         return lastUpdatedTime;
     }
 
-    public void setLastUpdated(long lastUpdated) {
+    public void setLastUpdatedTime(long lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 }

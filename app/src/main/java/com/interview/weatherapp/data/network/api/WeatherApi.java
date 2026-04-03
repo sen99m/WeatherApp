@@ -1,6 +1,6 @@
 package com.interview.weatherapp.data.network.api;
 
-import com.interview.weatherapp.data.network.model.WeatherResponse;
+import com.interview.weatherapp.data.network.response.WeatherResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

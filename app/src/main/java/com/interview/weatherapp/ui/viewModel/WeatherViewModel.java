@@ -1,60 +1,62 @@
 package com.interview.weatherapp.ui.viewModel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 
-import com.interview.weatherapp.data.network.model.WeatherResponse;
+import com.interview.weatherapp.data.dto.WeatherDTO;
 import com.interview.weatherapp.data.repository.WeatherRepository;
 import com.interview.weatherapp.utils.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherViewModel extends ViewModel {
+public class WeatherViewModel extends AndroidViewModel {
     private WeatherRepository weatherRepository;
 
     private MutableLiveData<String> searchTrigger = new MutableLiveData<>();
 
-    private LiveData<Resource<WeatherResponse>> weatherResult;
+    private LiveData<Resource<WeatherDTO>> weatherResult;
 
-    private List<WeatherResponse> searchHistory = new ArrayList<>();
-    public WeatherViewModel() {
-        weatherRepository = new WeatherRepository();
+    private List<WeatherDTO> searchHistory = new ArrayList<>();
 
+    public WeatherViewModel(@NonNull Application application) {
+        super(application);
+        weatherRepository = new WeatherRepository(application);
         weatherResult = Transformations.switchMap(searchTrigger, cityName -> {
             return weatherRepository.fetchWeather(cityName);
         });
-
     }
 
     public void searchCity(String cityName) {
-        if(cityName != null && !cityName.trim().isEmpty()) {
+        if (cityName != null && !cityName.trim().isEmpty()) {
             searchTrigger.setValue(cityName.trim());
         }
     }
 
-    public LiveData<Resource<WeatherResponse>> getWeatherResult() {
+    public LiveData<Resource<WeatherDTO>> getWeatherResult() {
         return weatherResult;
     }
 
-    public void addToHistory(WeatherResponse weatherResponse) {
-        if(weatherResponse == null)
-            return;
+    public void addToHistory(WeatherDTO newCity) {
+        if (newCity == null) return;
 
-        searchHistory.removeIf(pastWeatherResponse ->
-                pastWeatherResponse.getCityName().equalsIgnoreCase(weatherResponse.getCityName())
+        searchHistory.removeIf(city ->
+                city.getCityName().equalsIgnoreCase(newCity.getCityName())
         );
 
-        searchHistory.add(0, weatherResponse);
+        searchHistory.add(0, newCity);
 
-        if(searchHistory.size() > 25) {
-            searchHistory.remove(searchHistory.size() - 1);
+        if (searchHistory.size() > 25) {
+            searchHistory.remove(searchHistory.size() - 1); // Remove the oldest at the bottom
         }
     }
 
-    public List<WeatherResponse> getSearchHistory() {
+    public List<WeatherDTO> getSearchHistory() {
         return searchHistory;
     }
 }

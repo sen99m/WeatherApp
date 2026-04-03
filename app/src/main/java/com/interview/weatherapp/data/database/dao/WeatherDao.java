@@ -1,14 +1,16 @@
 package com.interview.weatherapp.data.database.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.interview.weatherapp.data.database.model.WeatherEntity;
+import com.interview.weatherapp.data.database.entity.WeatherEntity;
 
 import java.util.List;
 
+@Dao
 public interface WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertWeather(WeatherEntity weatherEntity);
@@ -16,10 +18,10 @@ public interface WeatherDao {
     @Query("SELECT * FROM weather WHERE cityName = :cityName")
     WeatherEntity getWeatherByCity(String cityName);
 
-    @Query("SELECT * FROM weather ORDER BY lastUpdated DESC LIMIT 25")
+    @Query("SELECT * FROM weather ORDER BY lastUpdatedTime DESC LIMIT 25")
     LiveData<List<WeatherEntity>> getRecentDetails();
 
     @Query("DELETE FROM weather WHERE cityName NOT IN " +
-            "(SELECT cityName FROM weather ORDER BY lastUpdated DESC LIMIT 25)")
+            "(SELECT cityName FROM weather ORDER BY lastUpdatedTime DESC LIMIT 25)")
     void deleteOldRecords();
 }
