@@ -53,6 +53,7 @@ public class WeatherAdapter extends ListAdapter<WeatherDTO, WeatherAdapter.Weath
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_background)
                 .into(holder.ivWeatherIcon);
+
     }
 
     static class WeatherDiffCallback extends DiffUtil.ItemCallback<WeatherDTO> {

@@ -81,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
                     if (resource.data != null) {
                         weatherViewModel.addToHistory(resource.data);
                         List<WeatherDTO> weatherList = new ArrayList<>(weatherViewModel.getSearchHistory());
-                        weatherAdapter.submitList(weatherList);
+                        weatherAdapter.submitList(weatherList, () -> {
+                            recyclerView.scrollToPosition(0);
+                        });
                     }
                     break;
 
